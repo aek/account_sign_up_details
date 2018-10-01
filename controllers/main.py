@@ -13,8 +13,10 @@ from openerp.addons.web.controllers.main import ensure_db
 from openerp import http
 from openerp.http import request
 from openerp.addons.website_sale.controllers.main import website_sale
+from openerp.addons.website_tansaction_create_account.controllers.main import my_website_sale_auth
 
 _logger = logging.getLogger(__name__)
+
 
 def login_redirect_a():
     url = '/sale_login?'
@@ -26,19 +28,19 @@ def login_redirect_a():
     </script></head></html>
     """ % (url, redirect_url)
 
-class AccountSignUpDetails(website_sale):
-    @http.route(['/sale_login'], type='http', auth="public", website=True)
-    def do_signup(self, qcontext):
-        """ Shared helper that creates a res.partner out of a token """
-        values = dict((key, qcontext.get(key))
-                      for key in ('login', 'name', 'password', 'state_id', 'country_id'))
-        assert any([k for k in values.values()]
-                   ), "The form was not properly filled in."
-        assert values.get('password') == qcontext.get(
-            'confirm_password'), "Passwords do not match; please retype them."
-        values['lang'] = request.lang
-        self._signup_with_values(qcontext.get('token'), values)
-        request.cr.commit()
+
+class AccountSignUpDetails(my_website_sale_auth):
+
+    @http.route()
+    def sale_auth(self, redirect=None, *args, **kw):
+        res = super(AccountSignUpDetails, self).sale_auth(redirect=redirect, *args, **kw)
+        res.qcontext.update({
+            'states': request.env["res.country.state"].sudo().search([]),
+            'countries': request.env["res.country"].sudo().search([]),
+        })
+
+        return res
+
 
 class AccountSignUpDetailsExt(website_sale):
 
@@ -47,5 +49,5 @@ class AccountSignUpDetailsExt(website_sale):
         context for signup and reset password """
         qcontext = request.params.copy()
         qcontext['states'] = request.env["res.country.state"].sudo().search([])
-	qcontext['countries'] = request.env["res.country"].sudo().search([])
+        qcontext['countries'] = request.env["res.country"].sudo().search([])
         return qcontext
