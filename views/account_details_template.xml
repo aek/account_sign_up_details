@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  	<data>
+		<template id="account_sign_up_details_id" inherit_id="website_tansaction_create_account.sale_login">
+	      <xpath expr="//input[@id='confirm_password']" position="after">
+ <form style="margin-top:-15px;" role="form" t-attf-action="/sale_login{{ '?debug' if debug else '' }}" method="post" t-if="not message">
+	          	<div class="form-group field-country"><label for="state_id" class="control-label">Wilaya</label><select name="state_id" class="form-control" t-att-value="state_id" required="required" t-att-readonly="'readonly' if only_passwords else None" t-att-autofocus="'autofocus' if login and not only_passwords else None"><option value="">Selectionner</option><t t-foreach="states or []" t-as="state"><option t-att-value="state.id"><t t-esc="state.name"/></option></t></select></div>
+			
+			<div class="form-group field-country">
+                    <label for="country_id" class="control-label">Pays</label>
+                    <select name="country_id" class="form-control" required="required" t-att-readonly="'readonly' if only_passwords else None"
+	                    t-att-autofocus="'autofocus' if login and not only_passwords else None">
+                        <option value="">Selectionner</option>
+                        <t t-foreach="countries or []" t-as="country">
+                            <option t-att-value="country.id">
+                                <t t-esc="country.name" />
+                            </option>
+                        </t>
+                    </select>
+                </div>
+</form>
+	      </xpath>
+	   	</template>
+  	</data>
+ </openerp>
