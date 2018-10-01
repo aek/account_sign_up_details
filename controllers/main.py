@@ -26,8 +26,8 @@ def login_redirect_a():
     </script></head></html>
     """ % (url, redirect_url)
 
+class AccountSignUpDetails(website_sale):
     @http.route(['/sale_login'], type='http', auth="public", website=True)
-
     def do_signup(self, qcontext):
         """ Shared helper that creates a res.partner out of a token """
         values = dict((key, qcontext.get(key))
@@ -39,6 +39,8 @@ def login_redirect_a():
         values['lang'] = request.lang
         self._signup_with_values(qcontext.get('token'), values)
         request.cr.commit()
+
+class AccountSignUpDetailsExt(website_sale):
 
     def get_auth_signup_qcontext(self):
         """ Shared helper returning the rendering
